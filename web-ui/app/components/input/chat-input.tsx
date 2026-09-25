@@ -230,16 +230,19 @@ function ChatInputInner({
   const [dragActive, setDragActive] = React.useState(false);
   const dragDepthRef = React.useRef(0);
 
-  const isEmpty = value.trim().length === 0 && attachments.length === 0;
+  const hasText = value.trim().length > 0;
+  const hasAttachments = attachments.length > 0;
+  const hasContent = hasText || hasAttachments;
 
   const canStop = ready && Boolean(onStop) && isGenerating && !disabled;
-  const canSend = ready && !isGenerating && !disabled && !isEmpty;
+  const canSend = ready && !isGenerating && !disabled && hasContent;
   const canUpload =
     ready && !disabled && !isGenerating && !uploading && !submitting;
   const canSwitchModel =
     ready && !disabled && !isGenerating && !uploading && !submitting;
   const canUseQuickMessage = ready && !disabled && !uploading && !submitting;
   const actionDisabled = submitting || uploading || (!canStop && !canSend);
+  
 
   React.useEffect(() => {
     if (!canUpload) {
