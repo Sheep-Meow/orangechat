@@ -526,7 +526,7 @@ object ModelRegistry {
     }
 
     private fun ModelDefinitionBuilder.visionInput() {
-        input(Modality.TEXT, Modality.IMAGE)
+        input(Modality.TEXT, Modality.IMAGE,Modality.AUDIO, Modality.VIDEO)
     }
 
     private fun ModelDefinitionBuilder.imageOutput() {
