@@ -2,51 +2,103 @@ name: Build Debug APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-debug-apk-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build Debug APK
+    runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "24"
 
-      - name: Install pnpm & Build Web-UI
+      - name: Install pnpm and build Web UI
         run: |
           npm install -g pnpm
           cd web-ui
           pnpm install --frozen-lockfile || pnpm install
           pnpm run build
 
-      - name: Gradle cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-
-      - name: Gradle Build
+      - name: Restore google-services.json if provided
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
+            echo "google-services.json restored from GitHub Secrets."
+          else
+            echo "GOOGLE_SERVICES_JSON secret is not set. Continue without it."
+          fi
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Generate debug keystore
+        run: |
+          if [ ! -f app/debug.keystore ]; then
+            keytool -genkeypair \
+              -v \
+              -keystore app/debug.keystore \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          else
+            echo "app/debug.keystore already exists."
+          fi
+
+      - name: Make Gradle executable
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        run: |
+          ./gradlew --no-daemon assembleDebug --stacktrace --info
+
+      - name: List APK outputs
         if: success()
+        run: |
+          find app/build/outputs/apk -name "*.apk" -print -exec ls -lh {} \;
+
+      - name: Upload Debug APK
+        if: success()
+        uses: actions/upload-artifact@v4
         with:
-          name: OrangeChat-Custom-Debug-APK
+          name: OrangeChat-Debug-APK
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload build reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OrangeChat-build-reports
+          path: |
+            **/build/reports/**
+            **/build/outputs/logs/**
+          if-no-files-found: ignore
