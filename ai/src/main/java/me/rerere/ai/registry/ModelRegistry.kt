@@ -521,7 +521,7 @@ object ModelRegistry {
         return if (modalities.isEmpty()) {
             listOf(Modality.TEXT)
         } else {
-            listOf(Modality.TEXT, Modality.IMAGE).filter { it in modalities }
+            listOf(Modality.TEXT, Modality.IMAGE,Modality.AUDIO, Modality.VIDEO).filter { it in modalities }
         }
     }
 
