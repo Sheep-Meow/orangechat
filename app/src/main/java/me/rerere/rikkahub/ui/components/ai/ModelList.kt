@@ -702,6 +702,8 @@ fun ModelModalityTag(model: Model) {
                 imageVector = when (modality) {
                     Modality.TEXT -> HugeIcons.Text
                     Modality.IMAGE -> HugeIcons.Image03
+                    Modality.AUDIO ->
+                    Modality.VIDEO ->
                 },
                 contentDescription = null,
                 modifier = Modifier
@@ -719,6 +721,8 @@ fun ModelModalityTag(model: Model) {
                 imageVector = when (modality) {
                     Modality.TEXT -> HugeIcons.Text
                     Modality.IMAGE -> HugeIcons.Image03
+                    Modality.AUDIO ->
+                    Modality.VIDEO ->
                 },
                 contentDescription = null,
                 modifier = Modifier
