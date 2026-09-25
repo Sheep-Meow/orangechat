@@ -887,8 +887,9 @@ class ProactiveMessageTriggerService : android.app.Service(), KoinComponent {
                 localTools.getTools(
                     assistant.localTools,
                     ToolInvocationContext(
-                        workspaceId = assistant.workspaceId?.toString(),
-                        conversationId = conversationId.toString()
+                        callerAssistantId = assistant.id.toString(),
+                        callerConversationId = conversationId.toString(),
+                        isHeadless = true
                     )
                 )
             )
