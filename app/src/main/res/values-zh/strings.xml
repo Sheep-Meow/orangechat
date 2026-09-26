@@ -867,6 +867,8 @@ mDNS 地址：使用 .local 主机名，同一网络中的其他设备可通过�
   <string name="setting_page_web_server_port_desc">Web服务器监听端口（1024-65535）</string>
   <string name="setting_page_web_server_start">启动</string>
   <string name="setting_page_web_server_stop">停止</string>
+  <string name="setting_provider_page_audio">音频</string>
+  <string name="setting_provider_page_video">视频</string>
   <string name="setting_provider_page_abilities">能力</string>
   <string name="setting_provider_page_add">添加</string>
   <string name="setting_provider_page_add_model">添加模型</string>
