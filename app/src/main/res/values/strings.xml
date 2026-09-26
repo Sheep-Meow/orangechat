@@ -915,6 +915,8 @@
   <string name="setting_page_web_server_start">Start</string>
   <string name="setting_page_web_server_stop">Stop</string>
   <string name="setting_provider_page_abilities">Abilities</string>
+  <string name="setting_provider_page_audio">Audio</string>
+  <string name="setting_provider_page_video">Video</string>
   <string name="setting_provider_page_add">Add</string>
   <string name="setting_provider_page_add_model">Add Model</string>
   <string name="setting_provider_page_add_models_hint">Click the button below to add models</string>
