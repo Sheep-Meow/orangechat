@@ -60,13 +60,16 @@ jobs:
         run: |
           echo "${{ secrets.KEY_BASE64 }}" | base64 -d > app/app.key
           echo "${{ secrets.SIGNING_CONFIG }}" > local.properties
+          # ✅ 新增：确保文件权限正确
+          chmod 644 app/app.key local.properties
 
       - name: Make Gradle executable
         run: chmod +x gradlew
 
       - name: Build Release APK
         run: |
-          ./gradlew --no-daemon assembleRelease --stacktrace --info
+          # ✅ 优化：使用 daemon，移除过度的日志选项
+          ./gradlew assembleRelease --build-cache
 
       - name: List APK outputs
         if: success()
