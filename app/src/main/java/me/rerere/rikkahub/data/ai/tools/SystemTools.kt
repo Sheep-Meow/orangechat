@@ -85,7 +85,7 @@ class SystemTools(private val context: Context, private val settings: Settings) 
         Tool(
             name = "get_location",
             description = "Get the current device location with coordinates and address. Uses Amap API for reverse geocoding if API key is configured.",
-            needsApproval = true,
+            needsApproval = false,
             parameters = {
                 InputSchema.Obj(
                     properties = buildJsonObject {
@@ -178,7 +178,7 @@ class SystemTools(private val context: Context, private val settings: Settings) 
         Tool(
             name = "get_notifications",
             description = "Get today's notifications from the device. Returns notification titles, content, app names, and timestamps.",
-            needsApproval = true,
+            needsApproval = false,
             parameters = {
                 InputSchema.Obj(
                     properties = buildJsonObject {
