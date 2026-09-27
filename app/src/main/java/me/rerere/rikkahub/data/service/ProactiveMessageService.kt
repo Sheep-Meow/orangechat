@@ -1124,41 +1124,7 @@ class ProactiveMessageTriggerService : android.app.Service(), KoinComponent {
                         )
                     )
                 }
-                val toolDef = tools.find { it.name == toolCall.toolName }
-                if (toolDef == null) {
-                    Log.w(TAG, "Tool ${toolCall.toolName} not found")
-                    executedTools.add(toolCall.copy(
-                        output = listOf(UIMessagePart.Text("""{"error":"Tool not found"}"""))
-                    ))
-                    continue
-                }
-
-                if (toolDef.needsApproval) {
-                    Log.w(TAG, "Tool ${toolCall.toolName} needs approval, auto-denying in proactive mode")
-                    executedTools.add(toolCall.copy(
-                        output = listOf(UIMessagePart.Text("""{"error":"Tool execution denied: requires user approval in proactive mode"}""")),
-                        approvalState = ToolApprovalState.Denied("Proactive mode: requires approval")
-                    ))
-                } else {
-                    try {
-                        val args = try {
-                            json.parseToJsonElement(toolCall.input.ifBlank { "{}" })
-                        } catch (e: Exception) {
-                            Log.w(TAG, "Tool ${toolCall.toolName} input JSON is incomplete, falling back to empty object: ${toolCall.input.take(200)}")
-                            JsonObject(emptyMap())
-                        }
-                        Log.d(TAG, "Executing tool ${toolDef.name} with args: $args")
-                        val result = toolDef.execute(args)
-                        executedTools.add(toolCall.copy(output = result))
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Tool execution failed: ${toolCall.toolName}, args=${toolCall.input}", e)
-                        executedTools.add(toolCall.copy(
-                            output = listOf(UIMessagePart.Text("""{"error":"${e.message}"}"""))
-                        ))
-                    }
-                }
-            }
-
+               
             val updatedParts = processedMessage.parts.map { part ->
                 if (part is UIMessagePart.Tool) {
                     executedTools.find { it.toolCallId == part.toolCallId } ?: part
