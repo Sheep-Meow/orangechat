@@ -92,6 +92,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
+import kotlin.serialization.json.JsonPrimitive
 
 class ProactiveMessageService : KoinComponent {
     private val settingsStore: SettingsStore by inject()
@@ -1124,7 +1125,7 @@ class ProactiveMessageTriggerService : android.app.Service(), KoinComponent {
                         )
                     )
                 }
-               
+            }
             val updatedParts = processedMessage.parts.map { part ->
                 if (part is UIMessagePart.Tool) {
                     executedTools.find { it.toolCallId == part.toolCallId } ?: part
