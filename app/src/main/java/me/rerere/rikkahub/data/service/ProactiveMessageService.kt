@@ -1084,6 +1084,48 @@ class ProactiveMessageTriggerService : android.app.Service(), KoinComponent {
             for (toolCall in toolCalls) {
                 val toolDef = tools.find { it.name == toolCall.toolName }
                 if (toolDef == null) {
+                    executedTools.add(
+                        toolCall.copy(
+                            output = listOf(
+                                UIMessagePart.Text("""{"error":"Tool not found"}""")
+                            )
+                        )
+                    )
+                    continue
+                }
+
+// 不再在主动消息模式中额外检查 toolDef.needsApproval。
+// 是否需要审批只由工具定义中的 needsApproval 决定。
+// 当前主动模式执行器已经进入执行阶段，因此这里直接执行。
+                try {
+                    val args = try {
+                        json.parseToJsonElement(toolCall.input.ifBlank { "{}" })
+                    } catch (e: Exception) {
+                        Log.w(
+                            TAG,
+                            "Tool ${toolCall.toolName} input JSON is incomplete, " +
+                                "falling back to empty object: ${toolCall.input.take(200)}"
+                        )
+                        JsonObject(emptyMap())
+                    }
+
+                    Log.d(TAG, "Executing tool ${toolDef.name} with args: $args")
+                    val result = toolDef.execute(args)
+                    executedTools.add(toolCall.copy(output = result))
+                } catch (e: Exception) {
+                    Log.e(TAG, "Tool ${toolCall.toolName} execution failed", e)
+                    executedTools.add(
+                        toolCall.copy(
+                            output = listOf(
+                                UIMessagePart.Text(
+                                    """{"error":${json.encodeToString(JsonPrimitive(e.message ?: "Tool execution failed"))}}"""
+                                )
+                            )
+                        )
+                    )
+                }
+                val toolDef = tools.find { it.name == toolCall.toolName }
+                if (toolDef == null) {
                     Log.w(TAG, "Tool ${toolCall.toolName} not found")
                     executedTools.add(toolCall.copy(
                         output = listOf(UIMessagePart.Text("""{"error":"Tool not found"}"""))
