@@ -72,6 +72,7 @@ import me.rerere.workspace.WorkspaceShellStatus
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import me.rerere.rikkahub.CHAT_COMPLETED_NOTIFICATION_CHANNEL_ID
 import me.rerere.rikkahub.data.datastore.ProactiveMessageSetting
 import me.rerere.rikkahub.data.datastore.Settings
@@ -92,7 +93,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
-import kotlin.serialization.json.JsonPrimitive
 
 class ProactiveMessageService : KoinComponent {
     private val settingsStore: SettingsStore by inject()
