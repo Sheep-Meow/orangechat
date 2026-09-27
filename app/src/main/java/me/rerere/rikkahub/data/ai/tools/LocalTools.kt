@@ -136,7 +136,7 @@ class LocalTools(
     val javascriptTool by lazy {
         Tool(
             name = "eval_javascript",
-            needsApproval = true,
+            needsApproval = false,
             description = """
                 Execute JavaScript code using QuickJS engine (ES2020).
                 The result is the value of the last expression in the code.
